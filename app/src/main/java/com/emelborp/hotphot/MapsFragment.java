@@ -4,18 +4,22 @@ import android.app.Activity;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
 
 
 /**
@@ -40,7 +44,8 @@ public class MapsFragment extends Fragment {
 
     private GoogleMap mMap;
     private MapView mapView;
-    private static Double latitude, longitude;
+    private static ArrayList<Marker> mMarkerList;
+    private Marker newMarker;
 
     private OnMapsFragmentInteractionListener mListener;
 
@@ -69,6 +74,7 @@ public class MapsFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getInt(ARG_SECTION_NUMBER);
         }
+        mMarkerList = new ArrayList<Marker>();
     }
 
     @Override
@@ -80,37 +86,40 @@ public class MapsFragment extends Fragment {
 
         mapView.onCreate(savedInstanceState);
 
-        if(mapView!=null)
-        {
-            final boolean[] isInitiallyCentered = new boolean[] {false};
+        mMap = mapView.getMap();
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-            mMap = mapView.getMap();
-
-            mMap.getUiSettings().setMyLocationButtonEnabled(true);
-
-            mMap.setMyLocationEnabled(true);
-
-            mMap.getUiSettings().setZoomControlsEnabled(true);
-
-            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
-            mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-                @Override
-                public void onMyLocationChange(Location aLocation) {
-                    if (!isInitiallyCentered[0]) {
-                        LatLng theLatLng = null;
-                        if (aLocation != null) {
-                            theLatLng = new LatLng(aLocation.getLatitude(),
-                                    aLocation.getLongitude());
-                        }
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(theLatLng,
-                                14.5f));
-                        isInitiallyCentered[0] = true;
+        final boolean[] isInitiallyCentered = new boolean[] {false};
+        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+            @Override
+            public void onMyLocationChange(Location aLocation) {
+                if (!isInitiallyCentered[0]) {
+                    LatLng theLatLng = null;
+                    if (aLocation != null) {
+                        theLatLng = new LatLng(aLocation.getLatitude(),
+                                aLocation.getLongitude());
                     }
-
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(theLatLng,
+                            14.5f));
+                    isInitiallyCentered[0] = true;
                 }
-            });
-        }
+
+            }
+        });
+
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                if (addMarker(latLng)) {
+                   Log.d("Map", "Gut :)");
+                } else {
+                    Log.d("Map", "Schlecht :(");
+                }
+            }
+        });
 
         return view;
     }
@@ -154,6 +163,21 @@ public class MapsFragment extends Fragment {
         super.onLowMemory();
 
         mapView.onLowMemory();
+    }
+
+    boolean addMarker(LatLng aPosition) {
+        if (mMap != null) {
+            MarkerOptions theNewMarker = new MarkerOptions();
+            theNewMarker
+                .position(aPosition)
+                .title("TempMarker");
+
+            Marker theMarker = mMap.addMarker(theNewMarker);
+            mMarkerList.add(theMarker);
+            newMarker = theMarker;
+            return true;
+        }
+        return false;
     }
 
     /**

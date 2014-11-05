@@ -3,6 +3,7 @@ package com.emelborp.hotphot;
 import android.app.Activity;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -101,6 +102,8 @@ public class MainActivity extends FragmentActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            Intent theIntent = new Intent(this, SettingsActivity.class);
+            startActivity(theIntent);
             return true;
         }
         return super.onOptionsItemSelected(item);
