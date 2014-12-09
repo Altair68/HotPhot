@@ -31,7 +31,12 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  *
  */
-public class MapsFragment extends Fragment {
+public class MapsFragment extends Fragment implements AddMarkerDialog.NoticeDialogListener {
+
+    public interface ShowDialog {
+        public void showMarkerDialog(DialogFragment aDialogFragment);
+    }
+
     /**
      * The fragment argument representing the section number for this
      * fragment.
@@ -48,6 +53,7 @@ public class MapsFragment extends Fragment {
     private Marker newMarker;
 
     private OnMapsFragmentInteractionListener mListener;
+    private ShowDialog mShowDialogActivity;
 
     /**
      * Use this factory method to create a new instance of
@@ -113,6 +119,7 @@ public class MapsFragment extends Fragment {
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
+                showDialog();
                 if (addMarker(latLng)) {
                    Log.d("Map", "Gut :)");
                 } else {
@@ -124,8 +131,14 @@ public class MapsFragment extends Fragment {
         return view;
     }
 
+    public void showDialog() {
+        AddMarkerDialog dialog = new AddMarkerDialog();
+        dialog.setTargetFragment(this, 1); //request code
+        mShowDialogActivity.showMarkerDialog(dialog);
+    }
+
     @Override
-    public void onAttach(Activity activity) {
+     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
             mListener = (OnMapsFragmentInteractionListener) activity;
@@ -134,6 +147,12 @@ public class MapsFragment extends Fragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
+        }
+        try {
+            mShowDialogActivity = (ShowDialog) activity;
+        } catch (ClassCastException e) {
+            Log.e(this.getClass().getSimpleName(), "NoticeDialogListener interface needs to be implemented by Activity.", e);
+            throw e;
         }
     }
 
@@ -192,5 +211,19 @@ public class MapsFragment extends Fragment {
      */
     public interface OnMapsFragmentInteractionListener {
         public void onMapsFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        AddMarkerDialog theDialog = (AddMarkerDialog) dialog;
+        newMarker.setTitle(theDialog.getName());
+        newMarker = null;
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        newMarker.remove();
+        mMarkerList.remove(newMarker);
+        newMarker = null;
     }
 }

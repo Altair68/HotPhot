@@ -6,6 +6,7 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -17,7 +18,8 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 public class MainActivity extends FragmentActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ProfileFragment.OnProfileFragmentInteractionListener, MapsFragment.OnMapsFragmentInteractionListener {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ProfileFragment.OnProfileFragmentInteractionListener, MapsFragment.OnMapsFragmentInteractionListener,
+        MapsFragment.ShowDialog {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -147,6 +149,11 @@ public class MainActivity extends FragmentActivity
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
+    }
+
+    public void showMarkerDialog(DialogFragment aDialogFragment) {
+        FragmentManager theFragMan = getSupportFragmentManager();
+        aDialogFragment.show(theFragMan, "MarkerDialog");
     }
 
     @Override

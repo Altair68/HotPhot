@@ -12,4 +12,6 @@
     <string name="save_marker">Speichern</string>
     <string name="dismiss_marker">Abbrechen</string>
 
+    <string name="marker_name">Name</string>
+
 </resources>
