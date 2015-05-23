@@ -1,6 +1,5 @@
 package com.emelborp.hotphot;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.support.v4.app.DialogFragment;
@@ -9,8 +8,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Spinner;
 
 /**
  * Created by Manuel on 09.10.2014.
@@ -35,44 +35,60 @@ public class AddMarkerDialog extends DialogFragment {
         view = inflater.inflate(R.layout.dialog_add_marker, null);
         builder.setView(view);
         builder.setMessage(R.string.add_marker_title)
-                .setPositiveButton(R.string.save_marker, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            NoticeDialogListener callback = null;
-                            try {
-                                callback = (NoticeDialogListener) getTargetFragment();
-                            } catch (ClassCastException e) {
-                                Log.e(this.getClass().getSimpleName(), "Callback of this class must be implemented by target fragment!", e);
-                                throw e;
-                            }
-
-                            if (callback != null) {
-                                callback.onDialogPositiveClick(AddMarkerDialog.this);
-                            }
+            .setPositiveButton(R.string.save_marker, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        NoticeDialogListener callback = null;
+                        try {
+                            callback = (NoticeDialogListener) getTargetFragment();
+                        } catch (ClassCastException e) {
+                            Log.e(this.getClass().getSimpleName(), "Callback of this class must be implemented by target fragment!", e);
+                            throw e;
                         }
-                    })
-                .setNegativeButton(R.string.dismiss_marker, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    NoticeDialogListener callback = null;
-                                    try {
-                                        callback = (NoticeDialogListener) getTargetFragment();
-                                    } catch (ClassCastException e) {
-                                        Log.e(this.getClass().getSimpleName(), "Callback of this class must be implemented by target fragment!", e);
-                                        throw e;
-                                    }
 
-                                    if (callback != null) {
-                                        callback.onDialogNegativeClick(AddMarkerDialog.this);
-                                    }
+                        if (callback != null) {
+                            callback.onDialogPositiveClick(AddMarkerDialog.this);
+                        }
+                    }
+                })
+            .setNegativeButton(R.string.dismiss_marker, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                NoticeDialogListener callback = null;
+                                try {
+                                    callback = (NoticeDialogListener) getTargetFragment();
+                                } catch (ClassCastException e) {
+                                    Log.e(this.getClass().getSimpleName(), "Callback of this class must be implemented by target fragment!", e);
+                                    throw e;
+                                }
+
+                                if (callback != null) {
+                                    callback.onDialogNegativeClick(AddMarkerDialog.this);
                                 }
                             }
+                        }
 
-                    );
-                    // Create the AlertDialog object and return it
-                    return builder.create();
-                }
+                );
+
+        Spinner theSpinner = (Spinner) view.findViewById(R.id.marker_cat);
+        Categories[] theCats = Categories.values();
+        String[] theArray = new String[theCats.length];
+        for (int i = 0; i < theCats.length; i++) {
+            theArray[i] = theCats[i].getName();
+        }
+
+        ArrayAdapter<String> theArrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, theArray);
+
+        theSpinner.setAdapter(theArrayAdapter);
+        // Create the AlertDialog object and return it
+        return builder.create();
+        }
 
     public String getName() {
         EditText theNameText = (EditText) view.findViewById(R.id.marker_name);
         return theNameText.getText().toString();
+    }
+
+    public String getCategory() {
+        Spinner theCategorySpinner = (Spinner) view.findViewById(R.id.marker_cat);
+        return (String) theCategorySpinner.getSelectedItem();
     }
 }
