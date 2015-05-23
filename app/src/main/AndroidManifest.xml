@@ -36,7 +36,7 @@
         <!-- Google Maps Fragment API Key Data -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyDbcyrAmoH1qQ9LnsJxtkZD_woAt1ffOO4" />
+            android:value="AIzaSyBcZy28QrqnQw2vhkULw-awegNAS9JOnXA" />
 
         <activity
             android:name="com.emelborp.hotphot.MainActivity"
