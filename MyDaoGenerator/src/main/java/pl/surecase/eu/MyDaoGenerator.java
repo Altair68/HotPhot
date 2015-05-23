@@ -7,7 +7,7 @@ import de.greenrobot.daogenerator.Schema;
 public class MyDaoGenerator {
 
     public static void main(String args[]) throws Exception {
-        Schema schema = new Schema(3, "hotphot");
+        Schema schema = new Schema(3, "com.emelborp.hotphot.gen");
 //        Entity box = schema.addEntity("Box");
 //        box.addIdProperty();
 //        box.addStringProperty("name");
@@ -20,6 +20,12 @@ public class MyDaoGenerator {
         marker.addDoubleProperty("lat");
         marker.addDoubleProperty("lon");
         marker.addStringProperty("cat");
+
+        Entity profile = schema.addEntity("Profile");
+        profile.addStringProperty("name");
+        profile.addStringProperty("email");
+        profile.addDateProperty("birthdate");
+
 
         new DaoGenerator().generateAll(schema, args[0]);
     }

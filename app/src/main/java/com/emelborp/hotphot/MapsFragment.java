@@ -15,11 +15,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -52,6 +52,7 @@ public class MapsFragment extends Fragment implements AddMarkerDialog.NoticeDial
     private GoogleMap mMap;
     private MapView mapView;
     private Marker newMarker;
+    private CameraPosition savedCameraPosition;
 
     private OnMapsFragmentInteractionListener mListener;
     private ShowDialog mShowDialogActivity;
@@ -121,7 +122,7 @@ public class MapsFragment extends Fragment implements AddMarkerDialog.NoticeDial
             public void onMapLongClick(LatLng latLng) {
                 showDialog();
                 if (addMarker(latLng)) {
-                   Log.d("Map", "Gut :)");
+                    Log.d("Map", "Gut :)");
                 } else {
                     Log.d("Map", "Schlecht :(");
                 }
@@ -136,13 +137,15 @@ public class MapsFragment extends Fragment implements AddMarkerDialog.NoticeDial
     public void loadSavedMarkers() {
         MainActivity theActivity = (MainActivity) getActivity();
 
-        List<hotphot.Marker> theMarkerList = theActivity.getMarkerDao().loadAll();
+        List<com.emelborp.hotphot.gen.Marker> theMarkerList = theActivity.getMarkerList();
+        theMarkerList = theActivity.getMarkerDao().loadAll();
 
-        for (Iterator<hotphot.Marker> theIterator = theMarkerList.iterator(); theIterator.hasNext(); ) {
-            hotphot.Marker theNextElement = theIterator.next();
+        for (Iterator<com.emelborp.hotphot.gen.Marker> theIterator = theMarkerList.iterator(); theIterator.hasNext(); ) {
+            com.emelborp.hotphot.gen.Marker theNextElement = theIterator.next();
 
             mMap.addMarker(convertToMarker(theNextElement));
         }
+        theActivity.setMarkerList(theMarkerList);
     }
 
     public void showDialog() {
@@ -188,6 +191,7 @@ public class MapsFragment extends Fragment implements AddMarkerDialog.NoticeDial
     {
         super.onDestroy();
 
+        savedCameraPosition = mMap.getCameraPosition();
         mapView.onDestroy();
     }
     @Override
@@ -231,16 +235,18 @@ public class MapsFragment extends Fragment implements AddMarkerDialog.NoticeDial
         AddMarkerDialog theDialog = (AddMarkerDialog) dialog;
         newMarker.setTitle(theDialog.getName());
         System.out.println(theDialog.getCategory());
-        ((MainActivity) getActivity()).getMarkerDao().insert(convertToDaoMarker(newMarker));
+        com.emelborp.hotphot.gen.Marker theDaoMarker = convertToDaoMarker(newMarker);
+        ((MainActivity) getActivity()).getMarkerDao().insert(theDaoMarker);
+        ((MainActivity) getActivity()).getMarkerList().add(theDaoMarker);
         newMarker = null;
     }
 
-    private hotphot.Marker convertToDaoMarker(Marker aMarker) {
-        return new hotphot.Marker(null, aMarker.getTitle(), aMarker.getPosition().latitude, aMarker.getPosition().longitude);
+    private com.emelborp.hotphot.gen.Marker convertToDaoMarker(Marker aMarker) {
+        return new com.emelborp.hotphot.gen.Marker(null, aMarker.getTitle(), aMarker.getPosition().latitude, aMarker.getPosition().longitude, "");
 
     }
 
-    private MarkerOptions convertToMarker(hotphot.Marker aMarker) {
+    private MarkerOptions convertToMarker(com.emelborp.hotphot.gen.Marker aMarker) {
         MarkerOptions theMarkerOptions = new MarkerOptions();
         theMarkerOptions
                 .title(aMarker.getName())

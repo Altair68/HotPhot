@@ -18,12 +18,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
-import hotphot.DaoMaster;
-import hotphot.DaoSession;
-import hotphot.MarkerDao;
+import com.emelborp.hotphot.gen.DaoMaster;
+import com.emelborp.hotphot.gen.DaoSession;
+import com.emelborp.hotphot.gen.Marker;
+import com.emelborp.hotphot.gen.MarkerDao;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends FragmentActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ProfileFragment.OnProfileFragmentInteractionListener, MapsFragment.OnMapsFragmentInteractionListener,
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ProfileFragment.OnProfileFragmentInteractionListener,
+        MapsFragment.OnMapsFragmentInteractionListener, ListMarkerFragment.OnListMarkerFragmentInteractionListener,
         MapsFragment.ShowDialog {
 
     /**
@@ -46,6 +51,16 @@ public class MainActivity extends FragmentActivity
     private DaoSession daoSession;
     private MarkerDao markerDao;
 
+    private List<Marker> markerList;
+
+    public List<Marker> getMarkerList() {
+        return markerList;
+    }
+
+    public void setMarkerList(List<Marker> markerList) {
+        this.markerList = markerList;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +79,8 @@ public class MainActivity extends FragmentActivity
         daoSession = daoMaster.newSession();
         markerDao = daoSession.getMarkerDao();
 
+        markerList = new ArrayList<Marker>();
+
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
@@ -81,6 +98,11 @@ public class MainActivity extends FragmentActivity
             case 1:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container, ProfileFragment.newInstance(position + 1))
+                        .commit();
+                break;
+            case 2:
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, ListMarkerFragment.newInstance(position + 1))
                         .commit();
                 break;
             default:
@@ -187,6 +209,11 @@ public class MainActivity extends FragmentActivity
 
     @Override
     public void onMapsFragmentInteraction(Uri uri) {
+        //TODO Erstmal nix...
+    }
+
+    @Override
+    public void onMarkerListFragmentInteraction(Uri uri) {
         //TODO Erstmal nix...
     }
 }

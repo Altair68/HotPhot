@@ -84,7 +84,11 @@ public class AddMarkerDialog extends DialogFragment {
 
     public String getName() {
         EditText theNameText = (EditText) view.findViewById(R.id.marker_name);
-        return theNameText.getText().toString();
+        String theNameString = theNameText.getText().toString();
+        if (theNameString.trim().equals("")) {
+            theNameString = "unnamed";
+        }
+        return theNameString;
     }
 
     public String getCategory() {

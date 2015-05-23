@@ -13,5 +13,6 @@
     <string name="dismiss_marker">Abbrechen</string>
 
     <string name="marker_name">Name</string>
+    <string name="no_entries">Keine Einträge vorhanden.</string>
 
 </resources>
