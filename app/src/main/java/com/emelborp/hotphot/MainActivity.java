@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -16,6 +17,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+
+import hotphot.DaoMaster;
+import hotphot.DaoSession;
+import hotphot.MarkerDao;
 
 public class MainActivity extends FragmentActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, ProfileFragment.OnProfileFragmentInteractionListener, MapsFragment.OnMapsFragmentInteractionListener,
@@ -33,6 +38,14 @@ public class MainActivity extends FragmentActivity
 
     public static FragmentManager fragmentManager;
 
+    /**
+     * DAO für die Datenspeicherung.
+     */
+    private SQLiteDatabase db;
+    private DaoMaster daoMaster;
+    private DaoSession daoSession;
+    private MarkerDao markerDao;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +57,12 @@ public class MainActivity extends FragmentActivity
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
+
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "hotphot-db", null);
+        db = helper.getWritableDatabase();
+        daoMaster = new DaoMaster(db);
+        daoSession = daoMaster.newSession();
+        markerDao = daoSession.getMarkerDao();
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -154,6 +173,11 @@ public class MainActivity extends FragmentActivity
     public void showMarkerDialog(DialogFragment aDialogFragment) {
         FragmentManager theFragMan = getSupportFragmentManager();
         aDialogFragment.show(theFragMan, "MarkerDialog");
+    }
+
+    public MarkerDao getMarkerDao() {
+        if (markerDao == null) throw new NullPointerException();
+        return markerDao;
     }
 
     @Override

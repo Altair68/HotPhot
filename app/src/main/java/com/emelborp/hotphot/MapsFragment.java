@@ -20,6 +20,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -49,7 +51,6 @@ public class MapsFragment extends Fragment implements AddMarkerDialog.NoticeDial
 
     private GoogleMap mMap;
     private MapView mapView;
-    private static ArrayList<Marker> mMarkerList;
     private Marker newMarker;
 
     private OnMapsFragmentInteractionListener mListener;
@@ -80,7 +81,6 @@ public class MapsFragment extends Fragment implements AddMarkerDialog.NoticeDial
         if (getArguments() != null) {
             mParam1 = getArguments().getInt(ARG_SECTION_NUMBER);
         }
-        mMarkerList = new ArrayList<Marker>();
     }
 
     @Override
@@ -128,7 +128,21 @@ public class MapsFragment extends Fragment implements AddMarkerDialog.NoticeDial
             }
         });
 
+        loadSavedMarkers();
+
         return view;
+    }
+
+    public void loadSavedMarkers() {
+        MainActivity theActivity = (MainActivity) getActivity();
+
+        List<hotphot.Marker> theMarkerList = theActivity.getMarkerDao().loadAll();
+
+        for (Iterator<hotphot.Marker> theIterator = theMarkerList.iterator(); theIterator.hasNext(); ) {
+            hotphot.Marker theNextElement = theIterator.next();
+
+            mMap.addMarker(convertToMarker(theNextElement));
+        }
     }
 
     public void showDialog() {
@@ -188,11 +202,10 @@ public class MapsFragment extends Fragment implements AddMarkerDialog.NoticeDial
         if (mMap != null) {
             MarkerOptions theNewMarker = new MarkerOptions();
             theNewMarker
-                .position(aPosition)
-                .title("TempMarker");
+                    .position(aPosition)
+                    .title("TempMarker");
 
             Marker theMarker = mMap.addMarker(theNewMarker);
-            mMarkerList.add(theMarker);
             newMarker = theMarker;
             return true;
         }
@@ -217,13 +230,28 @@ public class MapsFragment extends Fragment implements AddMarkerDialog.NoticeDial
     public void onDialogPositiveClick(DialogFragment dialog) {
         AddMarkerDialog theDialog = (AddMarkerDialog) dialog;
         newMarker.setTitle(theDialog.getName());
+        System.out.println(theDialog.getCategory());
+        ((MainActivity) getActivity()).getMarkerDao().insert(convertToDaoMarker(newMarker));
         newMarker = null;
+    }
+
+    private hotphot.Marker convertToDaoMarker(Marker aMarker) {
+        return new hotphot.Marker(null, aMarker.getTitle(), aMarker.getPosition().latitude, aMarker.getPosition().longitude);
+
+    }
+
+    private MarkerOptions convertToMarker(hotphot.Marker aMarker) {
+        MarkerOptions theMarkerOptions = new MarkerOptions();
+        theMarkerOptions
+                .title(aMarker.getName())
+                .position(new LatLng(aMarker.getLat(), aMarker.getLon()));
+        return theMarkerOptions;
+
     }
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
         newMarker.remove();
-        mMarkerList.remove(newMarker);
         newMarker = null;
     }
 }
