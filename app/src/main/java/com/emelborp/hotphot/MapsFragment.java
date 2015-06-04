@@ -234,7 +234,7 @@ public class MapsFragment extends Fragment implements AddMarkerDialog.NoticeDial
     public void onDialogPositiveClick(DialogFragment dialog) {
         AddMarkerDialog theDialog = (AddMarkerDialog) dialog;
         newMarker.setTitle(theDialog.getName());
-        System.out.println(theDialog.getCategory());
+        newMarker.setSnippet(theDialog.getCategory());
         com.emelborp.hotphot.gen.Marker theDaoMarker = convertToDaoMarker(newMarker);
         ((MainActivity) getActivity()).getMarkerDao().insert(theDaoMarker);
         ((MainActivity) getActivity()).getMarkerList().add(theDaoMarker);
@@ -242,7 +242,7 @@ public class MapsFragment extends Fragment implements AddMarkerDialog.NoticeDial
     }
 
     private com.emelborp.hotphot.gen.Marker convertToDaoMarker(Marker aMarker) {
-        return new com.emelborp.hotphot.gen.Marker(null, aMarker.getTitle(), aMarker.getPosition().latitude, aMarker.getPosition().longitude, "");
+        return new com.emelborp.hotphot.gen.Marker(null, aMarker.getTitle(), aMarker.getPosition().latitude, aMarker.getPosition().longitude, aMarker.getSnippet());
 
     }
 
@@ -250,7 +250,8 @@ public class MapsFragment extends Fragment implements AddMarkerDialog.NoticeDial
         MarkerOptions theMarkerOptions = new MarkerOptions();
         theMarkerOptions
                 .title(aMarker.getName())
-                .position(new LatLng(aMarker.getLat(), aMarker.getLon()));
+                .position(new LatLng(aMarker.getLat(), aMarker.getLon()))
+                .snippet(aMarker.getCat());
         return theMarkerOptions;
 
     }

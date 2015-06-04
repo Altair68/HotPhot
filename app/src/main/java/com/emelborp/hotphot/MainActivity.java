@@ -1,29 +1,34 @@
 package com.emelborp.hotphot;
 
-import android.app.Activity;
-
 import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
 
 import com.emelborp.hotphot.gen.DaoMaster;
 import com.emelborp.hotphot.gen.DaoSession;
 import com.emelborp.hotphot.gen.Marker;
 import com.emelborp.hotphot.gen.MarkerDao;
+import com.emelborp.hotphot.gen.Profile;
+import com.emelborp.hotphot.gen.ProfileDao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends FragmentActivity
@@ -50,8 +55,10 @@ public class MainActivity extends FragmentActivity
     private DaoMaster daoMaster;
     private DaoSession daoSession;
     private MarkerDao markerDao;
+    private ProfileDao profileDao;
 
     private List<Marker> markerList;
+    private Profile profile;
 
     public List<Marker> getMarkerList() {
         return markerList;
@@ -59,6 +66,10 @@ public class MainActivity extends FragmentActivity
 
     public void setMarkerList(List<Marker> markerList) {
         this.markerList = markerList;
+    }
+
+    public ProfileDao getProfileDao() {
+        return profileDao;
     }
 
     @Override
@@ -78,6 +89,7 @@ public class MainActivity extends FragmentActivity
         daoMaster = new DaoMaster(db);
         daoSession = daoMaster.newSession();
         markerDao = daoSession.getMarkerDao();
+        profileDao = daoSession.getProfileDao();
 
         markerList = new ArrayList<Marker>();
 
@@ -85,6 +97,22 @@ public class MainActivity extends FragmentActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+    }
+
+    public Profile getProfile() {
+        if (profile == null) {
+            List<Profile> theProfileList = daoSession.getProfileDao().loadAll();
+            if (theProfileList.size() == 1) {
+                profile = theProfileList.get(0);
+            } else if (theProfileList.size() == 0) {
+                Bitmap theImage = BitmapFactory.decodeResource(getResources(), R.drawable.no_image_available);
+                profile = new Profile(null, "Name", "mail@change.com", new Date(), Profile.bitmap2bytes(theImage));
+                profileDao.insertOrReplace(profile);
+            } else {
+                //TODO Error!!!
+            }
+        }
+        return profile;
     }
 
     @Override
@@ -145,8 +173,7 @@ public class MainActivity extends FragmentActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            Intent theIntent = new Intent(this, SettingsActivity.class);
-            startActivity(theIntent);
+            startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
             return true;
         }
         return super.onOptionsItemSelected(item);

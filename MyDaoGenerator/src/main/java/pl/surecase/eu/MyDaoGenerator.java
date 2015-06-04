@@ -8,6 +8,7 @@ public class MyDaoGenerator {
 
     public static void main(String args[]) throws Exception {
         Schema schema = new Schema(3, "com.emelborp.hotphot.gen");
+        schema.enableKeepSectionsByDefault();
 //        Entity box = schema.addEntity("Box");
 //        box.addIdProperty();
 //        box.addStringProperty("name");
@@ -15,17 +16,18 @@ public class MyDaoGenerator {
 //        box.addStringProperty("description");
 
         Entity marker = schema.addEntity("Marker");
-        marker.addIdProperty();
+        marker.addIdProperty().autoincrement().primaryKey();
         marker.addStringProperty("name");
         marker.addDoubleProperty("lat");
         marker.addDoubleProperty("lon");
         marker.addStringProperty("cat");
 
         Entity profile = schema.addEntity("Profile");
+        profile.addIdProperty().autoincrement().primaryKey();
         profile.addStringProperty("name");
         profile.addStringProperty("email");
         profile.addDateProperty("birthdate");
-
+        profile.addByteArrayProperty("picture");
 
         new DaoGenerator().generateAll(schema, args[0]);
     }

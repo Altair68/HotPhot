@@ -64,6 +64,8 @@ public class ListMarkerFragment extends Fragment {
                 vi = inflater.inflate(R.layout.listitem, null);
             TextView theHeader = (TextView) vi.findViewById(R.id.listItemHeader);
             theHeader.setText(data.get(position).getName());
+            TextView theHeaderCat = (TextView) vi.findViewById(R.id.listItemHeaderCategory);
+            theHeaderCat.setText(" - " + data.get(position).getCat());
             TextView theLatContent = (TextView) vi.findViewById(R.id.listItemLat);
             theLatContent.setText("Latitude: " + data.get(position).getLat().toString());
             TextView theLonContent = (TextView) vi.findViewById(R.id.listItemLon);
