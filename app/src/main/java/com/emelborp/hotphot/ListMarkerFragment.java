@@ -2,12 +2,15 @@ package com.emelborp.hotphot;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
@@ -65,13 +68,14 @@ public class ListMarkerFragment extends Fragment {
             TextView theHeader = (TextView) vi.findViewById(R.id.listItemHeader);
             theHeader.setText(data.get(position).getName());
             TextView theHeaderCat = (TextView) vi.findViewById(R.id.listItemHeaderCategory);
-            theHeaderCat.setText(" - " + data.get(position).getCat());
+            theHeaderCat.setText(data.get(position).getCat());
             TextView theLatContent = (TextView) vi.findViewById(R.id.listItemLat);
             theLatContent.setText("Latitude: " + data.get(position).getLat().toString());
             TextView theLonContent = (TextView) vi.findViewById(R.id.listItemLon);
             theLonContent.setText("Longitude: " + data.get(position).getLon().toString());
             return vi;
         }
+
     }
 
     /**
@@ -83,6 +87,8 @@ public class ListMarkerFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private int mParam1;
     private String mParam2;
+
+    private View rootView;
 
     private OnListMarkerFragmentInteractionListener mListener;
 
@@ -116,9 +122,20 @@ public class ListMarkerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View theView = inflater.inflate(R.layout.fragment_list_markers, container, false);
+       rootView = inflater.inflate(R.layout.fragment_list_markers, container, false);
 
-        ListView theListView = (ListView) theView.findViewById(R.id.markerListView);
+        return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        fillList();
+    }
+
+    private boolean fillList() {
+        ListView theListView = (ListView) rootView.findViewById(R.id.markerListView);
 
         MainActivity theActivity = (MainActivity) getActivity();
 
@@ -130,17 +147,34 @@ public class ListMarkerFragment extends Fragment {
                     getActivity(),
                     android.R.layout.simple_list_item_1,
                     android.R.id.text1,
-                    new String[] {theActivity.getString(R.string.no_entries)}));
+                    new String[]{theActivity.getString(R.string.no_entries)}));
 
-            return theView;
+            return true;
         }
 
+        theListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+
+                sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Ich habe hier einen sehr schönen Platz gefunden, schau ihn dir einmal an");
+                TextView theName = (TextView) view.findViewById(R.id.listItemHeader);
+                TextView theCat = (TextView) view.findViewById(R.id.listItemHeaderCategory);
+                TextView theLat = (TextView) view.findViewById(R.id.listItemLat);
+                TextView theLon = (TextView) view.findViewById(R.id.listItemLon);
+                String shareBody =
+                        "Name: " + theName.getText().toString() + " Kategorie: " + theCat.getText().toString() + " Lat: " + theLat.getText().toString() + " Lon: " + theLon.getText().toString();
+                sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+
+                startActivity(Intent.createChooser(sharingIntent, "Teilen mit"));
+            }
+        });
 
         theListView.setAdapter(new MarkerListAdapter(
                 getActivity(),
                 theMarkerList));
-
-        return theView;
+        return false;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

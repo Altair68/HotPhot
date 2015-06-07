@@ -1,29 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants" >
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/listItemHeader"
+        android:textStyle="bold"
+        android:textIsSelectable="false"
+        android:textSize="20dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/listItemHeader"
-            android:textStyle="bold"
-            android:textIsSelectable="false"
-            android:textSize="20dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/listItemHeaderCategory"
-            android:textIsSelectable="false"
-            android:textSize="20dp" />
-
-    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/listItemHeaderCategory"
+        android:textIsSelectable="false"
+        android:textSize="20dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -31,7 +25,7 @@
         android:id="@+id/listItemLat"
         android:textSize="14dp"
         android:textStyle="italic"
-        android:textIsSelectable="true" />
+        android:textIsSelectable="false" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -39,5 +33,5 @@
         android:id="@+id/listItemLon"
         android:textSize="14dp"
         android:textStyle="italic"
-        android:textIsSelectable="true" />
+        android:textIsSelectable="false" />
 </LinearLayout>

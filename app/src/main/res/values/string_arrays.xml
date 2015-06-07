@@ -3,7 +3,6 @@
     <string-array name="sections">
         <item>Karte</item>
         <item>Profil</item>
-        <item>Markerliste</item>
-        <item>Test</item>
+        <item>HotSpot-Liste</item>
     </string-array>
 </resources>
